@@ -1,7 +1,7 @@
-title: no style, please! # name of the site
-author: Riccardo Graziosi # name of site's author
-email: riccardo.graziosi97@gmail.com # email of site's author
-url: https://riggraz.dev # root address of the site
+title: Kupa 3D RPG # name of the site
+author: 3D 게임 제작 과정을 올리는 곳 # name of site's author
+email: jab724@naver.com # email of site's author
+url: https://kupaprogramming.tistory.com/category/Unity%203D%20%EC%95%A1%EC%85%98%20%EA%B2%8C%EC%9E%84%20%EC%A0%9C%EC%9E%91 # root address of the site
 baseurl: "/no-style-please" # subpath of the site, e.g. "/blog" (leave it blank "" if you're site shouldn't use a subpath)
 description: > # description of the site (multiple lines allowed)
   A (nearly) no-CSS, fast, minimalist Jekyll theme.
