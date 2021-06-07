@@ -1,6 +1,5 @@
 # For documentation on this file, see:
 # https://github.com/riggraz/no-style-please#customize-the-menu
-
 entries: 
   - title: Tistory 블로그 페이지로
   url: https://kupaprogramming.tistory.com/category/Unity%203D%20%EC%95%A1%EC%85%98%20%EA%B2%8C%EC%9E%84%20%EC%A0%9C%EC%9E%91
@@ -11,7 +10,6 @@ entries:
     #   - title: github repo
     #     url: https://github.com/riggraz/no-style-please
     #   - title: "used by <a href='https://riggraz.dev'>riggraz.dev</a> and <a href='https://github.com/riggraz/no-style-please/network/dependents'>many others</a>"
-
   - title: Unity Web GL 실행 (추후 추가)
   # url: https://github.com/jab724/Kupa3DRPG.github.io
   # - title: all posts
@@ -20,17 +18,14 @@ entries:
   #     show_more: true
   #     show_more_text: See archive...
   #     show_more_url: archive.html
-
   # - title: posts by category
   #   post_list:
   #     category: example2
   #     show_more: true
   #     show_more_text: See more posts...
   #     show_more_url: example2-archive.html
-
   # - title: rss
   #   url: feed.xml
-  
   # - title: another list
   #   entries:
   #     - title: with subitems
