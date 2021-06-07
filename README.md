@@ -1,1 +1,1 @@
-웹페이지에서 보기 https://jab724.github.io/Kupa3DRPG.github.io/
+웹페이지에서 보기 https://jab724.github.io/Kupa3DRPG/
