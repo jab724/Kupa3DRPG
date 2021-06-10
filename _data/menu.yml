@@ -10,8 +10,8 @@ entries:
     #   - title: github repo
     #     url: https://github.com/riggraz/no-style-please
     #   - title: "used by <a href='https://riggraz.dev'>riggraz.dev</a> and <a href='https://github.com/riggraz/no-style-please/network/dependents'>many others</a>"
-- title: Unity Web GL 실행 (추후 추가)
-  # url: https://github.com/jab724/Kupa3DRPG.github.io
+- title: Unity Web GL 실행 
+  url: https://github.com/jab724/Kupa3DRPG/Kupa3DRPG_Player/index.html
   # - title: all posts
   #   post_list:
   #     limit: 5
