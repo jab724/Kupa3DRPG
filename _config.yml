@@ -11,7 +11,7 @@ permalink: /:slug.html
 favicon: "logo.png" # name+extension of favicon (which must be put on the root folder)
 # goat_counter: "yoursitename" # put your GoatCounter name if you want to use GoatCounter analytics
 
-theme: no-style-please # if you are using GitHub Pages, change it to remote_theme: riggraz/no-style-please
+theme: jekyll-theme-cayman # if you are using GitHub Pages, change it to remote_theme: riggraz/no-style-please # 원래는 no-style-please인데 자꾸 경고 띄워서 이름만 바꿈
 
 theme_config:
   appearance: "auto" # can be "light", "dark" or "auto"
