@@ -69,7 +69,7 @@ namespace Kupa
             cameraPivotTransform.localEulerAngles = mouseMove;
 
             RaycastHit cameraWallHit;   //카메라가 벽 뒤로 가서 화면이 가려지는 것을 방지
-            if (Physics.Raycast(cameraPivotTransform.position, cameraTransform.position - cameraPivotTransform.position, out cameraWallHit, cameraDistance.Current))
+            if (Physics.Raycast(cameraPivotTransform.position, cameraTransform.position - cameraPivotTransform.position, out cameraWallHit, cameraDistance.Current, ~(1 << LayerMask.NameToLayer("Player"))))
                 cameraTransform.localPosition = Vector3.back * cameraWallHit.distance;
             else
                 cameraTransform.localPosition = Vector3.back * cameraDistance.Current;
