@@ -1,6 +1,6 @@
 {
 "companyName": "Kupa",
-"productName": "Kupa3DRPG_SRC",
+"productName": "Kupa3DRPG",
 "productVersion": "0.1",
 "dataUrl": "Kupa3DRPG_Player.data.unityweb",
 "wasmCodeUrl": "Kupa3DRPG_Player.wasm.code.unityweb",
