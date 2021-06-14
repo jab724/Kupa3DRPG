@@ -109,8 +109,8 @@ namespace Kupa
         {
             //GetAxisRaw를 사용하여 가속 과정 생략. normalized를 사용하여 대각선 이동 시 벡터의 길이가 약 1.41배 되는 부분 보정
             moveVelocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized * (IsRun ? runSpeed : walkSpeed);
-            animator.SetFloat("speedX", moveVelocity.x);
-            animator.SetFloat("speedY", moveVelocity.z);
+            animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+            animator.SetFloat("speedY", Input.GetAxis("Vertical"));
             moveVelocity = transform.TransformDirection(moveVelocity);    //입력 키를 카메라가 보고 있는 방향으로 조정
 
             //조작 중에만 카메라의 방향에 상대적으로 캐릭터가 움직이도록 한다.
