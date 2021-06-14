@@ -14,7 +14,7 @@ public class MinMaxAttribute : PropertyAttribute
     }
 }
 
-public class MinMaxValue
+public class MinMaxValue        //Min, Max 값 제한만 두는 용도
 {
     public float min;
     public float max;
@@ -24,7 +24,7 @@ public class MinMaxValue
         this.max = max;
     }
 }
-public class MinMaxCurrentValue
+public class MinMaxCurrentValue //Min, Max 값 제한을 둠과 동시에 그 사이의 사용값까지 사용하는 용도 (Current 변수 추가)
 {
     private float min;
     public float Min
