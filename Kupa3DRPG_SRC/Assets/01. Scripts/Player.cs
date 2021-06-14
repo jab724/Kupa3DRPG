@@ -107,9 +107,9 @@ namespace Kupa
 
         private void CalcInputMove()
         {
-            //GetAxisRaw를 사용하여 가속 과정 생략. normalized를 사용하여 대각선 이동 시 벡터의 길이가 약 1.41배 되는 부분 보정
+            //가속 과정이 조작감을 떨어뜨린다고 생각하여 GetAxisRaw를 사용하여 가속 과정 생략. normalized를 사용하여 대각선 이동 시 벡터의 길이가 약 1.41배 되는 부분 보정
             moveVelocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized * (IsRun ? runSpeed : walkSpeed);
-            animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+            animator.SetFloat("speedX", Input.GetAxis("Horizontal"));   //모션은 GetAxis을 써야 자연스러우므로 GetAxis 값 사용
             animator.SetFloat("speedY", Input.GetAxis("Vertical"));
             moveVelocity = transform.TransformDirection(moveVelocity);    //입력 키를 카메라가 보고 있는 방향으로 조정
 
