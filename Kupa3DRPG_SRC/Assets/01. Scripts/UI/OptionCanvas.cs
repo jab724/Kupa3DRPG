@@ -14,7 +14,7 @@ namespace Kupa
     public class OptionCanvas : MonoBehaviour
     {
         StringBuilder stringBuilder = new StringBuilder();
-        List<(int, int)> resolutionList = new List<(int, int)>() { (960, 540), (1280, 720), (1366, 768), (1600, 900), (1920, 1080), (2560, 1440) };
+        List<(int, int)> resolutionList = new List<(int, int)>() { (960, 540), (1280, 720), (1366, 768), (1600, 900), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320) };
         List<int> framerateList = new List<int>() { 30, 60, 120, 144, 240, 0 };
 
         [SerializeField] private Transform resolutionObject;
@@ -64,6 +64,13 @@ namespace Kupa
 
         private void Awake()
         {
+            for (int i = resolutionList.Count - 1; 0 <= i; --i)
+            {
+                if (Screen.currentResolution.height < resolutionList[i].Item2)
+                    resolutionList.RemoveAt(i);
+                else break;
+            }
+
             InitOptionItem(resolutionObject, out resolutionText, out resolutionButtonDown, out resolutionButtonUp, OnClickResolutionDown, OnClickResolutionUp);
             InitOptionItem(fullScreenModeObject, out fullScreenModeText, out fullScreenModeButtonDown, out fullScreenModeButtonUp, OnClickFullScreenModeDown, OnClickFullScreenModeUp);
             InitOptionItem(framerateObject, out framerateText, out framerateButtonDown, out framerateButtonUp, OnClickFramerateDown, OnClickFramerateUp);
@@ -98,17 +105,42 @@ namespace Kupa
 
         public void OnClickApply()
         {
-            PreferenceData.ResolutionWidth = resolution.Item1;
-            PreferenceData.ResolutionHeight = resolution.Item2;
-            PreferenceData.FullScreenMode = fullScreenMode;
-            PreferenceData.Framerate = framerate;
-            PreferenceData.TextureQuality = textureQuality;
-            PreferenceData.ShadowQuality = shadowQuality;
-            PreferenceData.AntiAliasing = antiAliasing;
-            PreferenceData.VSync = vSync;
-            PreferenceData.AnisotropicFiltering = anisotropicFiltering;
+            Screen.SetResolution(resolution.Item1, resolution.Item2, (FullScreenMode)fullScreenMode, framerate);
+            QualitySettings.masterTextureLimit = textureQuality;
+            if (shadowQuality == -1)
+            {
+                QualitySettings.shadows = UnityEngine.ShadowQuality.Disable;
+                QualitySettings.shadowResolution = ShadowResolution.Low;
+            }
+            else
+            {
+                QualitySettings.shadows = UnityEngine.ShadowQuality.All;
+                QualitySettings.shadowResolution = (ShadowResolution)shadowQuality;
+            }
+            QualitySettings.antiAliasing = antiAliasing;
+            QualitySettings.vSyncCount = vSync;
+            QualitySettings.anisotropicFiltering = (AnisotropicFiltering)anisotropicFiltering;
 
-            PreferenceData.ApplyGraphicOptionSetting();
+            GraphicSettingWarningPopup popup = null;
+            UIManager.Self.CreateGraphicSettingWarningPopup(out popup, () =>
+            {
+                PreferenceData.ResolutionWidth = resolution.Item1;
+                PreferenceData.ResolutionHeight = resolution.Item2;
+                PreferenceData.FullScreenMode = fullScreenMode;
+                PreferenceData.Framerate = framerate;
+                PreferenceData.TextureQuality = textureQuality;
+                PreferenceData.ShadowQuality = shadowQuality;
+                PreferenceData.AntiAliasing = antiAliasing;
+                PreferenceData.VSync = vSync;
+                PreferenceData.AnisotropicFiltering = anisotropicFiltering;
+                popup.DestroyPopup();
+            },
+            () =>
+            {
+                PreferenceData.ApplyGraphicOptionSetting();
+                OnEnable();
+                popup.DestroyPopup();
+            });
         }
         public void OnClickClose()
         {
@@ -123,7 +155,7 @@ namespace Kupa
             PreferenceData.AnisotropicFiltering != anisotropicFiltering)
             {
                 CommonPopup popup = null;
-                UIManager.Self.Create2BtnCommonDialog(out popup, "설정 닫기", "저장되지 않은 변경 사항이 있습니다.\n저장하지 않고 창을 닫습니까?", "닫기", "돌아가기",
+                UIManager.Self.Create2BtnCommonPopup(out popup, "설정 닫기", "저장되지 않은 변경 사항이 있습니다.\n저장하지 않고 창을 닫습니까?", "닫기", "돌아가기",
                 () =>
                 {
                     UIManager.Self.OpenCanvasOption(false);
@@ -279,8 +311,13 @@ namespace Kupa
             stringBuilder.Append(resolution.Item1).Append(" x ").Append(resolution.Item2);
             resolutionText.text = stringBuilder.ToString();
 
-            resolutionButtonDown.interactable = resolution.Item1 <= resolutionList[0].Item1;
-            resolutionButtonUp.interactable = resolution.Item1 >= resolutionList[resolutionList.Count - 1].Item1;
+#if UNITY_WEBGL
+            resolutionButtonDown.interactable = false;
+            resolutionButtonUp.interactable = false;
+#else
+            resolutionButtonDown.interactable = resolutionList[0].Item1 < resolution.Item1;
+            resolutionButtonUp.interactable = resolution.Item1 < resolutionList[resolutionList.Count - 1].Item1;
+#endif
         }
         private void UpdateFullScreenMode()
         {
@@ -299,9 +336,13 @@ namespace Kupa
                     fullScreenModeText.text = "Error";
                     break;
             }
-
+#if UNITY_WEBGL
+            fullScreenModeButtonDown.interactable = false;
+            fullScreenModeButtonUp.interactable = false;
+#else
             fullScreenModeButtonDown.interactable = fullScreenMode != 0;
             fullScreenModeButtonUp.interactable = fullScreenMode != 2;
+#endif
         }
         private void UpdateFramerate()
         {
@@ -440,6 +481,12 @@ namespace Kupa
 
             DownBtn.onClick.AddListener(OnClickDownListener);
             UpBtn.onClick.AddListener(OnClickUpListener);
+        }
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 200, 30), "디버그용 저장값 초기화 버튼"))
+                PlayerPrefs.DeleteAll();
         }
     }
 }

@@ -84,9 +84,15 @@ namespace Kupa
 
         static PreferenceData()     //초기화. PlayerPrefs 내 값을 변수에 할당.
         {
-            resolutionWidth = PlayerPrefs.GetInt(GetMemberName(() => resolutionWidth), Screen.width);
-            resolutionHeight = PlayerPrefs.GetInt(GetMemberName(() => resolutionHeight), Screen.height);
+#if UNITY_WEBGL
+            resolutionWidth = PlayerPrefs.GetInt(GetMemberName(() => resolutionWidth), 960);
+            resolutionHeight = PlayerPrefs.GetInt(GetMemberName(() => resolutionHeight), 540);
+            fullScreenMode = PlayerPrefs.GetInt(GetMemberName(() => fullScreenMode), 3);
+#else
+            resolutionWidth = PlayerPrefs.GetInt(GetMemberName(() => resolutionWidth), Screen.currentResolution.width);
+            resolutionHeight = PlayerPrefs.GetInt(GetMemberName(() => resolutionHeight), Screen.currentResolution.height);
             fullScreenMode = PlayerPrefs.GetInt(GetMemberName(() => fullScreenMode), 0);
+#endif
             framerate = PlayerPrefs.GetInt(GetMemberName(() => framerate), 60);
             textureQuality = PlayerPrefs.GetInt(GetMemberName(() => textureQuality), 0);
             shadowQuality = PlayerPrefs.GetInt(GetMemberName(() => shadowQuality), 2);

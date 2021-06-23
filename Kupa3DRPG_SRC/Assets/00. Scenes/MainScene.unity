@@ -1034,6 +1034,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commonPopupPrefab: {fileID: 7442545545942756194, guid: 4841cf3a0be9e0c449a94e1b20ff15bc,
     type: 3}
+  graphicSettingWarningPopup: {fileID: 7442545545942756194, guid: cd1bc831806eba14c8e4b105dfad6b2e,
+    type: 3}
   popupCanvas: {fileID: 1900179668}
   pauseCanvas: {fileID: 1348025210}
   optionCanvas: {fileID: 6051276454836563015}
