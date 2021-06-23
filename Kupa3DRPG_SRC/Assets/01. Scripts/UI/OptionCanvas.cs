@@ -112,31 +112,72 @@ namespace Kupa
         }
         public void OnClickClose()
         {
-            UIManager.Self.OpenCanvasOption(false);
+            if (PreferenceData.ResolutionWidth != resolution.Item1 ||
+            PreferenceData.ResolutionHeight != resolution.Item2 ||
+            PreferenceData.FullScreenMode != fullScreenMode ||
+            PreferenceData.Framerate != framerate ||
+            PreferenceData.TextureQuality != textureQuality ||
+            PreferenceData.ShadowQuality != shadowQuality ||
+            PreferenceData.AntiAliasing != antiAliasing ||
+            PreferenceData.VSync != vSync ||
+            PreferenceData.AnisotropicFiltering != anisotropicFiltering)
+            {
+                CommonPopup popup = null;
+                UIManager.Self.Create2BtnCommonDialog(out popup, "설정 닫기", "저장되지 않은 변경 사항이 있습니다.\n저장하지 않고 창을 닫습니까?", "닫기", "돌아가기",
+                () =>
+                {
+                    UIManager.Self.OpenCanvasOption(false);
+                    popup.DestroyPopup();
+                },
+                     () =>
+                     {
+                         popup.DestroyPopup();
+                     });
+            }
+            else
+            {
+                UIManager.Self.OpenCanvasOption(false);
+            }
         }
 
         private void OnClickResolutionDown()
         {
-            for (int i = 0; i < resolutionList.Count; ++i)
+            if (resolutionList[resolutionList.Count - 1].Item1 < resolution.Item1)
             {
-                if (resolution.Item1 == resolutionList[i].Item1)
+                resolution.Item1 = resolutionList[resolutionList.Count - 1].Item1;
+                resolution.Item2 = resolutionList[resolutionList.Count - 1].Item2;
+            }
+            else
+            {
+                for (int i = 0; i < resolutionList.Count; ++i)
                 {
-                    resolution.Item1 = resolutionList[i - 1].Item1;
-                    resolution.Item2 = resolutionList[i - 1].Item2;
-                    break;
+                    if (resolution.Item1 == resolutionList[i].Item1)
+                    {
+                        resolution.Item1 = resolutionList[i - 1].Item1;
+                        resolution.Item2 = resolutionList[i - 1].Item2;
+                        break;
+                    }
                 }
             }
             UpdateResolution();
         }
         private void OnClickResolutionUp()
         {
-            for (int i = 0; i < resolutionList.Count; ++i)
+            if (resolution.Item1 < resolutionList[0].Item1)
             {
-                if (resolution.Item1 == resolutionList[i].Item1)
+                resolution.Item1 = resolutionList[0].Item1;
+                resolution.Item2 = resolutionList[0].Item2;
+            }
+            else
+            {
+                for (int i = 0; i < resolutionList.Count; ++i)
                 {
-                    resolution.Item1 = resolutionList[i + 1].Item1;
-                    resolution.Item2 = resolutionList[i + 1].Item2;
-                    break;
+                    if (resolution.Item1 == resolutionList[i].Item1)
+                    {
+                        resolution.Item1 = resolutionList[i + 1].Item1;
+                        resolution.Item2 = resolutionList[i + 1].Item2;
+                        break;
+                    }
                 }
             }
             UpdateResolution();
@@ -238,8 +279,8 @@ namespace Kupa
             stringBuilder.Append(resolution.Item1).Append(" x ").Append(resolution.Item2);
             resolutionText.text = stringBuilder.ToString();
 
-            resolutionButtonDown.interactable = resolution.Item1 != resolutionList[0].Item1;
-            resolutionButtonUp.interactable = resolution.Item1 != resolutionList[resolutionList.Count - 1].Item1;
+            resolutionButtonDown.interactable = resolution.Item1 <= resolutionList[0].Item1;
+            resolutionButtonUp.interactable = resolution.Item1 >= resolutionList[resolutionList.Count - 1].Item1;
         }
         private void UpdateFullScreenMode()
         {
