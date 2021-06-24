@@ -28,11 +28,12 @@ namespace Kupa
         private IEnumerator TimerCor()
         {
             int curTime = waitTimeSec;
-            var timer = new WaitForSeconds(1f);
-            while (waitTimeSec <= 0)
+            var timer = new WaitForSecondsRealtime(1f);
+            while (0 < curTime)
             {
                 descriptionText.text = string.Format("그래픽 설정이 변경되었습니다.\n화면이 정상적으로 표시된다면 확인을 눌러주세요.\n{0}초 후 이전 설정으로 돌아갑니다.", curTime);
                 yield return timer;
+                --curTime;
             }
 
             cancelBtn.onClick.Invoke();

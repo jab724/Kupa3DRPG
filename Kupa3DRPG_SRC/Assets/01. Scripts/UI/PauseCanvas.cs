@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 //일시정지 캔버스 (현재 WebGL 플랫폼 특성 반영)
 //Web GL 환경 특성상 마우스가 보이며 게임 진행에 있어 거슬리기에 마우스 포인터가 보이지 않도록 하고 
@@ -12,9 +13,24 @@ namespace Kupa
 {
     public class PauseCanvas : MonoBehaviour
     {
+        [SerializeField] private Button continueBtn;
+        [SerializeField] private Button restartBtn;
+        [SerializeField] private Button optionBtn;
+        [SerializeField] private Button exitBtn;
+
         private void Awake()
         {
             SetPause(false);
+
+            continueBtn.onClick.AddListener(OnClickContinue);
+            restartBtn.onClick.AddListener(OnClickRestart);
+            optionBtn.onClick.AddListener(OnClickOption);
+            exitBtn.onClick.AddListener(OnClickExit);
+
+#if UNITY_WEBGL
+            exitBtn.interactable = false;
+            exitBtn.GetComponentInChildren<TMP_Text>().text = "<color=#888888><i>종료 (WebGL 불가능)</i></color>";
+#endif
         }
         private void OnEnable()
         {
