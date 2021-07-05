@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//배경음용 AudioSource
 namespace Kupa
 {
     public class AudioSource_BGM : MonoBehaviour

@@ -5,10 +5,12 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+//옵션 중 게임플레이 관련 옵션 관리
 namespace Kupa
 {
     public class Option_GamePlay : MonoBehaviourUI
     {
+        //엔진에서 마우스로 끌어서 참조하는 부분을 최소화. 스크립트에서 대부분 처리하도록 
         [SerializeField] private Transform mouseSensitivityObject;
 
         private TMP_Text mouseSensitivityText;
@@ -27,7 +29,7 @@ namespace Kupa
         {
             InitOptionItem(mouseSensitivityObject, out mouseSensitivityText, out mouseSensitivityButtonDown, out mouseSensitivityButtonUp, out mouseSensitivitySlider, OnClickMouseSensitivityDown, OnClickMouseSensitivityUp, OnValueChangedMouseSensitivity);
 
-            optionCanvas = GetComponentInParent<OptionCanvas>();
+            optionCanvas = GetComponentInParent<OptionCanvas>();    //옵션 내 공용 버튼을 위함. (적용, 닫기 버튼)
         }
 
         protected override void OnEnable()
@@ -65,7 +67,7 @@ namespace Kupa
 
         private void OnValueChangedMouseSensitivity(float volume)
         {
-            PreferenceData.MouseSensitivity = mouseSensitivity = Mathf.RoundToInt(volume);
+            PreferenceData.MouseSensitivity = mouseSensitivity = Mathf.RoundToInt(volume);      //float으로 들어오므로 만에 하나 정상적인 int 값으로 치환되지 않을 수 있어 RoundToInt로 보정해준다.
             UpdateMouseSensitivity();
         }
 
@@ -74,6 +76,7 @@ namespace Kupa
             mouseSensitivitySlider.value = mouseSensitivity;
             mouseSensitivityText.text = mouseSensitivity.ToString();
         }
+
 
         private void InitOptionItem(Transform itemObj, out TMP_Text valueText, out Button DownBtn, out Button UpBtn, out Slider slider, UnityAction OnClickDownListener, UnityAction OnClickUpListener, UnityAction<float> OnValueChangedListener)
         {

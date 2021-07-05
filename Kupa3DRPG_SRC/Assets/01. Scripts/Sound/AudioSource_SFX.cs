@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//효과음용 AudioSource
 namespace Kupa
 {
     [RequireComponent(typeof(AudioSource))]

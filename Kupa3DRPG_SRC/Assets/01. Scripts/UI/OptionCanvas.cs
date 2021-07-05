@@ -7,12 +7,12 @@ namespace Kupa
 {
     public class OptionCanvas : MonoBehaviour
     {
-        [SerializeField] private Button graphicBtn;
+        [SerializeField] private Button graphicBtn;     //탭
         [SerializeField] private Button soundBtn;
         [SerializeField] private Button gamePlayBtn;
         [SerializeField] private Button hotKeyBtn;
 
-        [SerializeField] private GameObject graphicObject;
+        [SerializeField] private GameObject graphicObject;  //스크롤뷰
         [SerializeField] private GameObject soundObject;
         [SerializeField] private GameObject gamePlayObject;
         [SerializeField] private GameObject hotKeyObject;
@@ -77,7 +77,7 @@ namespace Kupa
             hotKeyObject.SetActive(seq == 3);
         }
 
-        private void OnGUI()
+        private void OnGUI()    //PreferenceData에 저장된 값 초기화 용도. 개발 도중 변경되어 이전 값에 의해 진행이 막힐때 용도.
         {
             if (GUI.Button(new Rect(10, 10, 200, 30), "디버깅용 저장값 초기화 버튼"))
                 PlayerPrefs.DeleteAll();

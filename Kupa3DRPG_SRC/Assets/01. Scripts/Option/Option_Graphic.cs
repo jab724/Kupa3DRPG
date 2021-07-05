@@ -6,13 +6,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+//옵션 중 그래픽 관련 옵션 관리
 namespace Kupa
 {
     public class Option_Graphic : MonoBehaviourUI
     {
-        List<(int, int)> resolutionList = new List<(int, int)>() { (960, 540), (1280, 720), (1366, 768), (1600, 900), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320) };
-        List<int> framerateList = new List<int>() { 30, 60, 120, 144, 240, 0 };
+        List<(int, int)> resolutionList = new List<(int, int)>() { (960, 540), (1280, 720), (1366, 768), (1600, 900), (1920, 1080), (2560, 1440), (3840, 2160), (7680, 4320) }; //해상도 리스트. 일단 16:9만 사용. 최대 8k까지 감지
+        List<int> framerateList = new List<int>() { 30, 60, 120, 144, 240, 0 };     //프레임레이트 리스트.
 
+        //엔진에서 마우스로 끌어서 참조하는 부분을 최소화. 스크립트에서 대부분 처리하도록 
         [SerializeField] private Transform resolutionObject;
         [SerializeField] private Transform fullScreenModeObject;
         [SerializeField] private Transform framerateObject;
@@ -78,7 +80,7 @@ namespace Kupa
             InitOptionItem(vSyncObject, out vSyncText, out vSyncButtonDown, out vSyncButtonUp, OnClickVSyncDown, OnClickVSyncUp);
             InitOptionItem(anisotropicFilteringObject, out anisotropicFilteringText, out anisotropicFilteringButtonDown, out anisotropicFilteringButtonUp, OnClickAnisotropicFilteringDown, OnClickAnisotropicFilteringUp);
 
-            optionCanvas = GetComponentInParent<OptionCanvas>();
+            optionCanvas = GetComponentInParent<OptionCanvas>();    //옵션 내 공용 버튼을 위함. (적용, 닫기 버튼)
         }
 
         protected override void OnEnable()
@@ -107,9 +109,9 @@ namespace Kupa
             optionCanvas.SetCloseOnClickListener(true, Close);
         }
 
-        public void OnClickApply()
+        public void OnClickApply()      //현재 적용 버튼은 그래픽 옵션에서만 사용함. 다른 기능은 즉시 반영하여 적용 버튼이 별도로 필요하지 않음
         {
-            if (CheckGraphicSettingChange())
+            if (CheckGraphicSettingChange())    //그래픽 변경 시 정상적으로 표시가 되지 않을 수도 있으므로 15초 이내로 사용자 입력이 없으면 이전 설정으로 되돌아 올 수 있도록 안전장치를 해둔다.
             {
                 Screen.SetResolution(resolution.Item1, resolution.Item2, (FullScreenMode)fullScreenMode, framerate);
                 QualitySettings.masterTextureLimit = textureQuality;
@@ -150,7 +152,7 @@ namespace Kupa
             }
         }
 
-        protected override void Close()
+        protected override void Close()     //다른 옵션과 달리 그래픽은 바로 적용이 되지 않으므로 적용하지 않고 나가려 하면 경고 팝업을 띄운다.
         {
             if (CheckGraphicSettingChange())
             {
@@ -481,7 +483,7 @@ namespace Kupa
             UpBtn.onClick.AddListener(OnClickUpListener);
         }
 
-        private bool CheckGraphicSettingChange()
+        private bool CheckGraphicSettingChange()    //옵션을 변경한게 있는지 체크
         {
             return PreferenceData.ResolutionWidth != resolution.Item1 ||
             PreferenceData.ResolutionHeight != resolution.Item2 ||

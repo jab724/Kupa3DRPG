@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+//그래픽 설정 변경 후 안전장치용 팝업.
 namespace Kupa
 {
     public class GraphicSettingWarningPopup : MonoBehaviourUI

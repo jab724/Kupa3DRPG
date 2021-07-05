@@ -5,10 +5,12 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+//옵션 중 사운드 관련 옵션 관리
 namespace Kupa
 {
     public class Option_Sound : MonoBehaviourUI
     {
+        //엔진에서 마우스로 끌어서 참조하는 부분을 최소화. 스크립트에서 대부분 처리하도록 
         [SerializeField] private Transform masterObject;
         [SerializeField] private Transform bgmObject;
         [SerializeField] private Transform sfxObject;
@@ -48,7 +50,7 @@ namespace Kupa
             InitOptionItem(sfxObject, out sfxText, out sfxButtonDown, out sfxButtonUp, out sfxSlider, OnClickSFXDown, OnClickSFXUp, OnValueChangedSFX);
             InitOptionItem(voiceObject, out voiceText, out voiceButtonDown, out voiceButtonUp, out voiceSlider, OnClickVoiceDown, OnClickVoiceUp, OnValueChangedVoice);
 
-            optionCanvas = GetComponentInParent<OptionCanvas>();
+            optionCanvas = GetComponentInParent<OptionCanvas>();    //옵션 내 공용 버튼을 위함. (적용, 닫기 버튼)
         }
 
         protected override void OnEnable()

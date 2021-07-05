@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//BGM은 동시에 여러개가 재생 될 일이 없으므로 별도로 관리한다. 단, 페이드 교체 연출을 위해 AudioSource를 2개 사용한다.
 namespace Kupa
 {
     [RequireComponent(typeof(AudioSource))]
@@ -16,16 +17,16 @@ namespace Kupa
             }
         }
 
-        private const int STATE_READY = 0;
-        private const int STATE_PLAY_AUDIO_1 = 1;
-        private const int STATE_PLAY_AUDIO_2 = 2;
+        private const int STATE_READY = 0;          //최초. BGM이 재생되고 있지 않은 상태
+        private const int STATE_PLAY_AUDIO_1 = 1;   //1번 AudioSource 재생 중
+        private const int STATE_PLAY_AUDIO_2 = 2;   //2번 AudioSource 재생 중
 
         private AudioSource audioSource1;
-        private AudioSource audioSource2;       //BGM 페이드 전환 용도
+        private AudioSource audioSource2;
 
         private int state = STATE_READY;
 
-        private float volume { get { return PreferenceData.MasterVolume * PreferenceData.BgmVolume * 0.0001f; } }
+        private float volume { get { return PreferenceData.MasterVolume * PreferenceData.BgmVolume * 0.0001f; } }   //페이드 연출 중에 사용하기 위한 볼륨
 
         private void Awake()
         {
@@ -47,7 +48,7 @@ namespace Kupa
             audioSource1.volume = audioSource2.volume = 0f;
         }
 
-        public void Play(AudioClip clip)
+        public void Play(AudioClip clip)        //페이드 연출 없이 재생
         {
             if (CheckOverrideClip(clip)) return;
             switch (state)
@@ -74,7 +75,7 @@ namespace Kupa
                     break;
             }
         }
-        public void PlayFade(AudioClip clip, float fadeTime = 1f)
+        public void PlayFade(AudioClip clip, float fadeTime = 1f)   //페이드 연출을 주면서 재생
         {
             if (CheckOverrideClip(clip)) return;
             if (fadeTime <= 0f) Play(clip);
@@ -137,7 +138,7 @@ namespace Kupa
             }
         }
 
-        private bool CheckOverrideClip(AudioClip clip)
+        private bool CheckOverrideClip(AudioClip clip)      //동일한 음악인지 체크한다. 같은 BGM인데 다시 재생되는 것을 방지
         {
             bool result = false;
             if (state == STATE_PLAY_AUDIO_1) result = audioSource1.clip == clip;

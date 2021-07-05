@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+//UI 관련 전역 관리
 namespace Kupa
 {
     public class UIManager : MonoBehaviour
@@ -24,7 +25,7 @@ namespace Kupa
         public GameObject pauseCanvas;
         public GameObject optionCanvas;
 
-        private List<UnityAction> escapeKeyDownEventList = new List<UnityAction>();
+        private List<UnityAction> escapeKeyDownEventList = new List<UnityAction>();     //Escape 버튼으로 창을 종료하기 위함. MonoBehaviourUI를 상속받은 UI들은 화면에 노출되면 순서대로 리스트에 들어간다.
 
         private void Awake()
         {
@@ -39,7 +40,7 @@ namespace Kupa
                 if (0 < escapeKeyDownEventList.Count)
                     escapeKeyDownEventList[escapeKeyDownEventList.Count - 1].Invoke();
                 else
-                    OpenCanvasPause();
+                    OpenCanvasPause();      //떠있는 UI가 없는 상태에서 Escape 버튼 입력 시 일시정지 화면을 띄운다.
             }
         }
 
