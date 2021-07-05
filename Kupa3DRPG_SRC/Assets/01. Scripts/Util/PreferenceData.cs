@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 //사용자 설정 값의 저장 관리를 위한 클래스. 여기선 제일 쉬운 PlayerPrefs를 사용
 namespace Kupa
 {
     public static class PreferenceData
     {
+        class Event : UnityEvent { }
+
         //그래픽 설정 값
         private static int resolutionWidth;       //해상도 너비
         private static int resolutionHeight;      //해상도 높이
@@ -22,9 +25,25 @@ namespace Kupa
         private static int anisotropicFiltering;  //비등방성 필터링         //0: 끄기, 2: 켜기
 
         //사운드 설정 값
+        private static int masterVolume;
+        private static int bgmVolume;
+        private static int sfxVolume;
+        private static int voiceVolume;
+        static Event BgmVolumeChangeEvent = new Event();
+        public static void AddListenerBgmVolumeChangeEvent(UnityAction callback) { BgmVolumeChangeEvent.RemoveListener(callback); BgmVolumeChangeEvent.AddListener(callback); }
+        public static void RemoveListenerBgmVolumeChangeEvent(UnityAction callback) { BgmVolumeChangeEvent.RemoveListener(callback); }
+        public static void InvokeBgmVolumeChangeEvent() { BgmVolumeChangeEvent.Invoke(); }
+        static Event SfxVolumeChangeEvent = new Event();
+        public static void AddListenerSfxVolumeChangeEvent(UnityAction callback) { SfxVolumeChangeEvent.RemoveListener(callback); SfxVolumeChangeEvent.AddListener(callback); }
+        public static void RemoveListenerSfxVolumeChangeEvent(UnityAction callback) { SfxVolumeChangeEvent.RemoveListener(callback); }
+        public static void InvokeSfxVolumeChangeEvent() { SfxVolumeChangeEvent.Invoke(); }
+        static Event VoiceVolumeChangeEvent = new Event();
+        public static void AddListenerVoiceVolumeChangeEvent(UnityAction callback) { VoiceVolumeChangeEvent.RemoveListener(callback); VoiceVolumeChangeEvent.AddListener(callback); }
+        public static void RemoveListenerVoiceVolumeChangeEvent(UnityAction callback) { VoiceVolumeChangeEvent.RemoveListener(callback); }
+        public static void InvokeVoiceVolumeChangeEvent() { VoiceVolumeChangeEvent.Invoke(); }
 
         //게임플레이 설정 값
-        private static float mouseSensitivity;      //마우스 감도
+        private static int mouseSensitivity;      //마우스 감도
 
         //단축키 설정 값
 
@@ -75,10 +94,47 @@ namespace Kupa
             set { anisotropicFiltering = value; PlayerPrefs.SetInt(GetMemberName(() => anisotropicFiltering), value); }
         }
 
-        public static float MouseSensitivity
+        public static int MasterVolume
+        {
+            get { return masterVolume; }
+            set
+            {
+                masterVolume = value; PlayerPrefs.SetInt(GetMemberName(() => masterVolume), value);
+                InvokeBgmVolumeChangeEvent(); InvokeSfxVolumeChangeEvent(); InvokeVoiceVolumeChangeEvent();
+            }
+        }
+        public static int BgmVolume
+        {
+            get { return bgmVolume; }
+            set
+            {
+                bgmVolume = value; PlayerPrefs.SetInt(GetMemberName(() => bgmVolume), value);
+                InvokeBgmVolumeChangeEvent();
+            }
+        }
+        public static int SfxVolume
+        {
+            get { return sfxVolume; }
+            set
+            {
+                sfxVolume = value; PlayerPrefs.SetInt(GetMemberName(() => sfxVolume), value);
+                InvokeSfxVolumeChangeEvent();
+            }
+        }
+        public static int VoiceVolume
+        {
+            get { return voiceVolume; }
+            set
+            {
+                voiceVolume = value; PlayerPrefs.SetInt(GetMemberName(() => voiceVolume), value);
+                InvokeVoiceVolumeChangeEvent();
+            }
+        }
+
+        public static int MouseSensitivity
         {
             get { return mouseSensitivity; }
-            set { mouseSensitivity = value; PlayerPrefs.SetFloat(GetMemberName(() => mouseSensitivity), value); }
+            set { mouseSensitivity = value; PlayerPrefs.SetInt(GetMemberName(() => mouseSensitivity), value); }
         }
         #endregion
 
@@ -99,7 +155,13 @@ namespace Kupa
             antiAliasing = PlayerPrefs.GetInt(GetMemberName(() => antiAliasing), 0);
             vSync = PlayerPrefs.GetInt(GetMemberName(() => vSync), QualitySettings.vSyncCount);
             anisotropicFiltering = PlayerPrefs.GetInt(GetMemberName(() => anisotropicFiltering), 2);
-            mouseSensitivity = PlayerPrefs.GetFloat(GetMemberName(() => mouseSensitivity), 2f);
+
+            masterVolume = PlayerPrefs.GetInt(GetMemberName(() => masterVolume), 100);
+            bgmVolume = PlayerPrefs.GetInt(GetMemberName(() => bgmVolume), 100);
+            sfxVolume = PlayerPrefs.GetInt(GetMemberName(() => sfxVolume), 100);
+            voiceVolume = PlayerPrefs.GetInt(GetMemberName(() => voiceVolume), 100);
+
+            mouseSensitivity = PlayerPrefs.GetInt(GetMemberName(() => mouseSensitivity), 20);
         }
 
         private static string GetMemberName<T>(Expression<Func<T>> memberExpression)    //변수명을 string으로 리턴해주는 함수. 변수명을 그대로 key로 쓰기 위함. 

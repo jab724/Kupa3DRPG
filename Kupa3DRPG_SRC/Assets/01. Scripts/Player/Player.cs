@@ -18,6 +18,7 @@ namespace Kupa
         private Vector3 moveVelocity;       //이동 속도
         private bool isRun;             //달리기 상태
         private bool IsRun { get { return isRun; } set { isRun = value; animator.SetBool("isRun", value); } }  //값을 변경하면 애니메이터 값도 자동으로 변경되도록
+        private bool isGroundedCheck;   //timeScale이 0이 되거나 어떤 이유로 한 프레임만 isGrounded가 false가 되는 경우 모션이 튀는 증상을 막기위한 용도 
 
         private void Awake()
         {
@@ -38,6 +39,8 @@ namespace Kupa
 
             if (characterController.isGrounded)     //지면에 발이 닿아있는 경우
             {
+                if (isGroundedCheck == false)
+                    isGroundedCheck = true;
                 animator.SetBool("isGrounded", true);
                 CalcInputMove();        //이동 입력 계산. 땅에서만 컨트롤 가능
                 RaycastHit groundHit;
@@ -48,7 +51,10 @@ namespace Kupa
             }
             else
             {
-                animator.SetBool("isGrounded", false);
+                if (isGroundedCheck)
+                    isGroundedCheck = false;
+                else
+                    animator.SetBool("isGrounded", false);
                 moveVelocity += Physics.gravity * Time.deltaTime;   //중력 가산
             }
 
@@ -61,7 +67,7 @@ namespace Kupa
 
             float cameraHeight = 1.3f;
             cameraPivotTransform.position = transform.position + Vector3.up * cameraHeight;  //캐릭터의 가슴 높이쯤
-            mouseMove += new Vector3(-Input.GetAxisRaw("Mouse Y") * PreferenceData.MouseSensitivity, Input.GetAxisRaw("Mouse X") * PreferenceData.MouseSensitivity, 0);   //마우스의 움직임을 가감
+            mouseMove += new Vector3(-Input.GetAxisRaw("Mouse Y") * PreferenceData.MouseSensitivity * 0.1f, Input.GetAxisRaw("Mouse X") * PreferenceData.MouseSensitivity * 0.1f, 0);   //마우스의 움직임을 가감
             if (mouseMove.x < -60)  //상하 각도는 제한을 둔다.
                 mouseMove.x = -60;
             else if (60 < mouseMove.x)

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 //포커스를 잃을 상황이 빈번하여 이에 관한 불편함 최소화
 namespace Kupa
 {
-    public class PauseCanvas : MonoBehaviour
+    public class PauseCanvas : MonoBehaviourUI
     {
         [SerializeField] private Button continueBtn;
         [SerializeField] private Button restartBtn;
@@ -32,20 +32,26 @@ namespace Kupa
             exitBtn.GetComponentInChildren<TMP_Text>().text = "<color=#888888><i>종료 (WebGL 불가능)</i></color>";
 #endif
         }
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             SetPause(true);
         }
-        private void Update()
+        protected override void OnDisable()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-                SetPause(true);
+            base.OnDisable();
+            SetPause(false);
         }
 
         private void OnApplicationFocus(bool focus)
         {
             if (focus == false)
                 SetPause(true);
+        }
+
+        protected override void Close()
+        {
+            SetPause(false);
         }
 
         private void SetPause(bool isPause)

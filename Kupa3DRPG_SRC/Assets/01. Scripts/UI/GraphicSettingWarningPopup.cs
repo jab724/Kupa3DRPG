@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Kupa
 {
-    public class GraphicSettingWarningPopup : MonoBehaviour
+    public class GraphicSettingWarningPopup : MonoBehaviourUI
     {
         [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private Button okBtn;
@@ -17,6 +17,11 @@ namespace Kupa
         private void Awake()
         {
             StartCoroutine("TimerCor");
+        }
+
+        protected override void Close()
+        {
+            cancelBtn.onClick.Invoke();
         }
 
         public void SetGraphicSettingWarningPopup(UnityAction okListener, UnityAction cancelListener)

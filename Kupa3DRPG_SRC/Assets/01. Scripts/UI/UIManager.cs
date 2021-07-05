@@ -24,6 +24,8 @@ namespace Kupa
         public GameObject pauseCanvas;
         public GameObject optionCanvas;
 
+        private List<UnityAction> escapeKeyDownEventList = new List<UnityAction>();
+
         private void Awake()
         {
             if (instance == null) instance = this;
@@ -32,7 +34,24 @@ namespace Kupa
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) OpenCanvasPause();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (0 < escapeKeyDownEventList.Count)
+                    escapeKeyDownEventList[escapeKeyDownEventList.Count - 1].Invoke();
+                else
+                    OpenCanvasPause();
+            }
+        }
+
+        public void AddEscapeListener(UnityAction listener)
+        {
+            RemoveEscapeListener(listener);
+            escapeKeyDownEventList.Add(listener);
+        }
+
+        public void RemoveEscapeListener(UnityAction listener)
+        {
+            escapeKeyDownEventList.Remove(listener);
         }
 
         public CommonPopup Create2BtnCommonPopup(out CommonPopup popup, string title, string description, string okText, string cancelText, UnityAction okListener, UnityAction cancelListener)
