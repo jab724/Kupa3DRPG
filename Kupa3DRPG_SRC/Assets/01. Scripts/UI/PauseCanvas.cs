@@ -59,14 +59,12 @@ namespace Kupa
             if (isPause)
             {
                 Time.timeScale = 0.0f;
-                Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
                 gameObject.SetActive(true);
             }
             else
             {
                 Time.timeScale = 1.0f;
-                Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
                 gameObject.SetActive(false);
             }

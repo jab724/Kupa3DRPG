@@ -172,7 +172,8 @@ namespace Kupa
 
         public static void ApplyGraphicOptionSetting()
         {
-            Screen.SetResolution(ResolutionWidth, ResolutionHeight, (FullScreenMode)FullScreenMode, Framerate);
+            Screen.SetResolution(ResolutionWidth, ResolutionHeight, (FullScreenMode)FullScreenMode);
+            Application.targetFrameRate = Framerate;
             QualitySettings.masterTextureLimit = TextureQuality;
             if (ShadowQuality == -1)
             {

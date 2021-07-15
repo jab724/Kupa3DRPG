@@ -113,7 +113,8 @@ namespace Kupa
         {
             if (CheckGraphicSettingChange())    //그래픽 변경 시 정상적으로 표시가 되지 않을 수도 있으므로 15초 이내로 사용자 입력이 없으면 이전 설정으로 되돌아 올 수 있도록 안전장치를 해둔다.
             {
-                Screen.SetResolution(resolution.Item1, resolution.Item2, (FullScreenMode)fullScreenMode, framerate);
+                Screen.SetResolution(resolution.Item1, resolution.Item2, (FullScreenMode)fullScreenMode);
+                Application.targetFrameRate = framerate;
                 QualitySettings.masterTextureLimit = textureQuality;
                 if (shadowQuality == -1)
                 {

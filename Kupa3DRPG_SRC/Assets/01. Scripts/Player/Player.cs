@@ -4,9 +4,13 @@ namespace Kupa
 {
     public class Player : MonoBehaviour
     {
+        public enum PlayerState { IDLE, ATTACK, HIT, DEAD }
+
         [SerializeField] [Tooltip("걷는 속도")] private float walkSpeed = 5.0f;
         [SerializeField] [Tooltip("달리는 속도")] private float runSpeed = 10.0f;
         [SerializeField] [Tooltip("카메라 거리")] [MinMax(0.1f, 10f, ShowEditRange = true)] private MinMaxCurrentValue cameraDistance = new MinMaxCurrentValue(1f, 5f);
+        [Header("Status")]
+        public float playerHealthPoint = 1000f;
 
         private Transform modelTransform;
         private Transform cameraPivotTransform;
@@ -16,9 +20,11 @@ namespace Kupa
 
         private Vector3 mouseMove;      //카메라 회전값
         private Vector3 moveVelocity;       //이동 속도
+        private PlayerState playerState = PlayerState.IDLE;
         private bool isRun;             //달리기 상태
         private bool IsRun { get { return isRun; } set { isRun = value; animator.SetBool("isRun", value); } }  //값을 변경하면 애니메이터 값도 자동으로 변경되도록
         private bool isGroundedCheck;   //timeScale이 0이 되거나 어떤 이유로 한 프레임만 isGrounded가 false가 되는 경우 모션이 튀는 증상을 막기위한 용도 
+        private bool isSuperArmor = false;
 
         private void Awake()
         {
@@ -32,33 +38,27 @@ namespace Kupa
         private void Update()   //캐릭터 조정 및 컨트롤 반영은 여기서 진행
         {
             if (Time.timeScale < 0.001f) return;         //일시정지 등 시간을 멈춘 상태에선 입력 방지
-
             FreezeRotationXZ();     //CharacterController 캡슐이 어떤 이유로든 기울어지지 않도록 방지
+
+            switch (playerState)
+            {
+                case PlayerState.IDLE:
+                    PlayerIdle();
+                    break;
+                case PlayerState.ATTACK:
+                    PlayerAttack();
+                    break;
+                case PlayerState.HIT:
+                    PlayerHit();
+                    break;
+                case PlayerState.DEAD:
+                    PlayerDead();
+                    break;
+                default:
+                    break;
+            }
+
             CameraDistanceCtrl();   //카메라 거리 조작
-            RunCheck();             //달리기 상태 체크
-
-            if (characterController.isGrounded)     //지면에 발이 닿아있는 경우
-            {
-                if (isGroundedCheck == false)
-                    isGroundedCheck = true;
-                animator.SetBool("isGrounded", true);
-                CalcInputMove();        //이동 입력 계산. 땅에서만 컨트롤 가능
-                RaycastHit groundHit;
-                if (GroundCheck(out groundHit))  //밑으로 Raycast를 쏘아 땅을 한 번 더 확인. 
-                    moveVelocity.y = IsRun ? -runSpeed : -walkSpeed;    //isGounded는 다음 프레임때 velocity.y 만큼 내려가도 바닥에 닿지 않으면 false를 리턴한다. 평지에선 속도와 비례해서 y 힘을 주어야 경사로에서도 isGrounded 값이 true가 된다.
-                else
-                    moveVelocity.y = -1;    //Raycast는 캡슐의 중앙에서 쏘기에 모서리에 걸치면 Raycast는 false이나 isGrounded는 true인 경우가 발생한다. 보통 높은 곳에서 떨어질때 발생하므로 y값을 최소화 하여 자연스럽게 떨어지도록 한다.
-            }
-            else
-            {
-                if (isGroundedCheck)
-                    isGroundedCheck = false;
-                else
-                    animator.SetBool("isGrounded", false);
-                moveVelocity += Physics.gravity * Time.deltaTime;   //중력 가산
-            }
-
-            characterController.Move(moveVelocity * Time.deltaTime);    //최종적으로 CharacterController Move 호출
         }
 
         private void LateUpdate()       //최종 카메라 보정은 여기서 진행
@@ -80,6 +80,79 @@ namespace Kupa
                 cameraTransform.localPosition = Vector3.back * cameraWallHit.distance;
             else
                 cameraTransform.localPosition = Vector3.back * cameraDistance.Current;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.tag == "EnemyAttack")
+            {
+                PlayerHitEnter(other.GetComponent<PlayerHitObject>());
+            }
+        }
+
+        private void PlayerIdle()
+        {
+            RunCheck();             //달리기 상태 체크
+
+            if (characterController.isGrounded)     //지면에 발이 닿아있는 경우
+            {
+                if (isGroundedCheck == false)
+                    isGroundedCheck = true;
+                animator.SetBool("isGrounded", true);
+                CalcInputMove();        //이동 입력 계산. 땅에서만 컨트롤 가능
+                RaycastHit groundHit;
+                if (GroundCheck(out groundHit))  //밑으로 Raycast를 쏘아 땅을 한 번 더 확인. 
+                    moveVelocity.y = IsRun ? -runSpeed : -walkSpeed;    //isGounded는 다음 프레임때 velocity.y 만큼 내려가도 바닥에 닿지 않으면 false를 리턴한다. 평지에선 속도와 비례해서 y 힘을 주어야 경사로에서도 isGrounded 값이 true가 된다.
+                else
+                    moveVelocity.y = -1;    //Raycast는 캡슐의 중앙에서 쏘기에 모서리에 걸치면 Raycast는 false이나 isGrounded는 true인 경우가 발생한다. 보통 높은 곳에서 떨어질때 발생하므로 y값을 최소화 하여 자연스럽게 떨어지도록 한다.
+
+                if (Input.GetButtonDown("Fire1"))
+                {
+                    playerState = PlayerState.ATTACK;
+                    animator.SetTrigger("swordAttackTrigger");
+                    animator.SetFloat("speedX", 0);
+                    animator.SetFloat("speedY", 0);
+                    tt = 0;
+                }
+            }
+            else
+            {
+                if (isGroundedCheck)
+                    isGroundedCheck = false;
+                else
+                    animator.SetBool("isGrounded", false);
+                moveVelocity += Physics.gravity * Time.deltaTime;   //중력 가산
+            }
+
+            characterController.Move(moveVelocity * Time.deltaTime);    //최종적으로 CharacterController Move 호출
+        }
+
+        float tt = 0;
+        private void PlayerAttack()
+        {
+            tt += Time.deltaTime;
+            if (2 <= tt)
+                playerState = PlayerState.IDLE;
+        }
+        private void PlayerHit()
+        {
+
+        }
+        private void PlayerHitEnter(PlayerHitObject playerHit)
+        {
+            playerState = PlayerState.HIT;
+            if (isSuperArmor == false && playerState != PlayerState.DEAD)
+                animator.SetTrigger("hitTrigger");
+            playerHealthPoint -= playerHit.damage;
+            if (playerHealthPoint <= 0f)
+            {
+                playerHealthPoint = 0f;
+                playerState = PlayerState.DEAD;
+                animator.SetBool("isDead", true);
+            }
+        }
+        private void PlayerDead()
+        {
         }
 
         private void FreezeRotationXZ()
