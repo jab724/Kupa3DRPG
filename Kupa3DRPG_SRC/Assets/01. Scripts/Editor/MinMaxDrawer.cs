@@ -9,7 +9,6 @@ public class MinMaxDrawer : PropertyDrawer
         // cast the attribute to make life easier
         MinMaxAttribute minMax = attribute as MinMaxAttribute;
 
-        // This only works on a vector2! ignore on any other property type (we should probably draw an error message instead!)
         if (property.propertyType == SerializedPropertyType.Vector2)
         {
             // if we are flagged to draw in a special mode, lets modify the drawing rectangle to draw only one line at a time

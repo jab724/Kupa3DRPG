@@ -4,11 +4,30 @@ namespace Kupa
 {
     public class Player : MonoBehaviour
     {
-        public enum PlayerState { IDLE, ATTACK, HIT, DEAD }
+        public static class PublicData
+        {
+            public static bool Enabled { get { return enabled; } }
+            private static bool enabled = false;
+
+            public static Transform Transform { get { return transform; } }
+            private static Transform transform;
+
+            public static PlayerState PlayerState { get { return playerState; } }
+            private static PlayerState playerState = PlayerState.IDLE;
+
+            public static void SetPlayerPublicData(Transform transform, PlayerState playerState)
+            {
+                enabled = true;
+                PublicData.transform = transform;
+                PublicData.playerState = playerState;
+            }
+        }
+
+        public enum PlayerState { IDLE, ATTACK, UNDER_ATTACK, DEAD }
 
         [SerializeField] [Tooltip("걷는 속도")] private float walkSpeed = 5.0f;
         [SerializeField] [Tooltip("달리는 속도")] private float runSpeed = 10.0f;
-        [SerializeField] [Tooltip("카메라 거리")] [MinMax(0.1f, 10f, ShowEditRange = true)] private MinMaxCurrentValue cameraDistance = new MinMaxCurrentValue(1f, 5f);
+        [SerializeField] [Tooltip("카메라 거리")] [Range(1f, 5f)] private float cameraDistance = 2.5f;
         [Header("Status")]
         public float playerHealthPoint = 1000f;
 
@@ -33,6 +52,8 @@ namespace Kupa
             animator = modelTransform.GetComponent<Animator>();
             cameraTransform = Camera.main.transform;
             cameraPivotTransform = cameraTransform.parent;
+
+            SetPlayerPublicData();
         }
 
         private void Update()   //캐릭터 조정 및 컨트롤 반영은 여기서 진행
@@ -48,8 +69,8 @@ namespace Kupa
                 case PlayerState.ATTACK:
                     PlayerAttack();
                     break;
-                case PlayerState.HIT:
-                    PlayerHit();
+                case PlayerState.UNDER_ATTACK:
+                    PlayerUnderAttack();
                     break;
                 case PlayerState.DEAD:
                     PlayerDead();
@@ -76,17 +97,17 @@ namespace Kupa
             cameraPivotTransform.localEulerAngles = mouseMove;
 
             RaycastHit cameraWallHit;   //카메라가 벽 뒤로 가서 화면이 가려지는 것을 방지
-            if (Physics.Raycast(cameraPivotTransform.position, cameraTransform.position - cameraPivotTransform.position, out cameraWallHit, cameraDistance.Current, ~(1 << LayerMask.NameToLayer("Player"))))       //플레이어의 콜라이더에 막히지 않도록
+            if (Physics.Raycast(cameraPivotTransform.position, cameraTransform.position - cameraPivotTransform.position, out cameraWallHit, cameraDistance, ~(1 << LayerMask.NameToLayer("Player"))))       //플레이어의 콜라이더에 막히지 않도록
                 cameraTransform.localPosition = Vector3.back * cameraWallHit.distance;
             else
-                cameraTransform.localPosition = Vector3.back * cameraDistance.Current;
+                cameraTransform.localPosition = Vector3.back * cameraDistance;
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.tag == "EnemyAttack")
             {
-                PlayerHitEnter(other.GetComponent<PlayerHitObject>());
+                PlayerUnderAttackEnter(other.GetComponent<PlayerHitObject>());
             }
         }
 
@@ -134,15 +155,15 @@ namespace Kupa
             if (2 <= tt)
                 playerState = PlayerState.IDLE;
         }
-        private void PlayerHit()
+        private void PlayerUnderAttack()
         {
 
         }
-        private void PlayerHitEnter(PlayerHitObject playerHit)
+        private void PlayerUnderAttackEnter(PlayerHitObject playerHit)
         {
-            playerState = PlayerState.HIT;
+            playerState = PlayerState.UNDER_ATTACK;
             if (isSuperArmor == false && playerState != PlayerState.DEAD)
-                animator.SetTrigger("hitTrigger");
+                animator.SetTrigger("UnderAttack");
             playerHealthPoint -= playerHit.damage;
             if (playerHealthPoint <= 0f)
             {
@@ -162,7 +183,7 @@ namespace Kupa
 
         private void CameraDistanceCtrl()
         {
-            cameraDistance.Current -= Input.GetAxisRaw("Mouse ScrollWheel");     //휠로 카메라의 거리를 조절
+            cameraDistance -= Input.GetAxisRaw("Mouse ScrollWheel");     //휠로 카메라의 거리를 조절
         }
 
         private void RunCheck()
@@ -213,6 +234,11 @@ namespace Kupa
                     modelTransform.rotation = Quaternion.Slerp(modelTransform.rotation, cameraRotation, 10.0f * Time.deltaTime);
                 }
             }
+        }
+
+        private void SetPlayerPublicData()
+        {
+            PublicData.SetPlayerPublicData(transform, playerState);
         }
     }
 }
